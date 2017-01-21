@@ -3,29 +3,22 @@ from PIL import Image
 from PIL import ImageDraw
 import skimage.data
 import selectivesearch
+import numpy as np
 
-def draw_rect_on_image(image_array, x, y, w, h):
-    im = Image.fromarray(image_array)
-    draw = ImageDraw.Draw(im)
+def draw_rect_on_image(img, x, y, w, h):
+    draw = ImageDraw.Draw(img)
     draw.rectangle(((x, y),(x+w, y+h)), outline="red")
     del draw
-    return im
-    
+    return img
 
-img = skimage.data.astronaut()
-img_lbl, regions = selectivesearch.selective_search(img, scale=500, sigma=0.9, min_size=10)
+img = Image.open('train_4363.jpg')
+print('image_loaded')
+image_array = np.asarray(img)
+img_lbl, regions = selectivesearch.selective_search(image_array, scale=500, sigma=0.9, min_size=100)
 
 for index, region in enumerate(regions):
     rect = regions[index]['rect']
-    im = draw_rect_on_image(img, rect[0], rect[1], rect[2], rect[3])
-    im.save('test' + str(index) + '.png')
+    img = draw_rect_on_image(img, rect[0], rect[1], rect[2], rect[3])
 
-#draw = ImageDraw.Draw(pil_im)
-#draw.rectangle(((50,70),(100,300)), outline = "red")
-## point of left-top and right-bottom
-#del draw
-#
-## write to stdout
-##pil_im.save(sys.stdout, "PNG")
-#
-#pil_im.save('test2.png')
+img.save('test.png')
+print('completed')
